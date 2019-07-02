@@ -1,0 +1,192 @@
+<script type="text/javascript">
+
+</script>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" style="font-size: 62px;">
+<HEAD>
+    <title>　</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <!--<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js" type="text/javascript"></script>-->
+    <script src="https://cdn.staticfile.org/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+</HEAD>
+<BODY onload="connect(9090);">
+<header>
+    <a onclick="history.go(-1)"><i class="ico02 back fl"></i></a>
+
+    <div>
+        <div>
+            <textarea cols="60" rows="20" readonly style="margin-left: 20px" id="talk">
+
+            </textarea>
+        </div>
+        <div>
+            <textarea cols="60" rows="5"  style="margin: 5px 0 0 20px" id="send_data">
+
+            </textarea>
+        </div>
+        <button type="button" id="send" value="" style="margin: 5px 0 0 20px">发送</button>
+    </div>
+
+    <!--<i class="ico null"></i>-->
+    <!--<i class="ico plus qx45 fr"></i>-->
+    <!--<i class="ico plus qx0 fr"></i>-->
+
+
+
+
+    <!-- <a onclick="showMask()"><i class="ico service fr"></i></a> -->
+    <!--<include file="Template/Home/Run/home.html"/>-->
+</header>
+<div class="headblank"></div>
+
+<!--聊天结束-->
+
+<div class="alert" id="user1" data-id="1"> </div>
+<div class="alert1" id="user2" data-id="2"></div>
+
+<!-- 投注 -->
+
+<div class="bm-layer-wrapper"></div>
+<div class="bm-layer">
+
+
+
+
+
+
+    <!--推送-->
+<!--    <include file="Template/Home/Run/js/lot_im.html"/>-->
+<!--    <script src='assets/common/js//socket.io.js'></script>-->
+    <!--推送-->
+
+</div>
+
+
+
+<script>
+    var ws, name;
+
+    // 连接服务端
+    function connect(port){
+        // 创建websocket
+        // ws = new WebSocket("ws://" + document.domain + ":"+port);
+        ws = new WebSocket("ws://talkroom.cn:"+port);
+        // 当socket连接打开时，发送登录信息
+        ws.onopen = function(){
+            var name = "wwwdsdd";
+            var login_type = 1;
+            // 登录
+            // var driverid = sj();
+//            var room = "<?php //echo !empty($room)? $room :0 ;?>//";
+            var room = '';
+            if (login_type == 1){
+                room = sj();
+            }
+            var login_data = '{"type":"login","client_name":"' + name.replace(/"/g, '\\"') + '","login_type":"'+login_type+'","room":"'+room+'"}';
+            console.log("websocket握手成功，发送登录数据:" + login_data);
+            ws.send(login_data);
+            ws.send('tom');
+            ws.send('保持连接，发第二次信息，查看服务器回应');
+            ws.onmessage = function(e) {
+                console.log(e.data)
+                var str = JSON.parse(e.data);
+                console.log(str)
+                if (str.type == 'login'){
+                    var content =  str.content + '&#10;&nbsp;&nbsp;&nbsp;&nbsp;';
+                } else {
+                    var content = '用户'+ str.uid + '说：' + str.content;
+                }
+                $('#talk').append(content)
+            };
+        };
+        $("#send").click(function(){
+            //发送数据
+            var name = "nickname";
+            // var driverid = $.cookie('driverid');
+            // console.log(driverid);return false;
+
+            var send_data = $('#send_data').val();
+            var data = {};
+            data["type"] = "say";
+            data["client_name"] = name.replace(/"/g, '\\"');
+            data["room"] = 1;
+            data["content"] = send_data;
+            var sendData = JSON.stringify(data);
+            ws.send(sendData);
+        });
+        // 当有消息时根据消息类型显示不同信息
+        ws.onmessage = onmessage;
+        ws.onclose = function(){
+            console.log("连接关闭，定时重连");
+            connect();
+        };
+        ws.onerror = function() {
+            console.log("出现错误");
+        };
+    }
+    //随机生成0-100数字
+    function sj() {
+        //x上限，y下限
+        var x = 999999;
+        var y = 100000;
+        var rand = parseInt(Math.random() * (x - y + 1) + y);
+        return rand;
+    }
+    $(".bm-btn").click(function(){
+        //$(".alert").show();
+        //setTimeout( "$('.alert').fadeOut()" , 1000)
+    });
+    $(".f").click(function(){
+        $(".alert1").show();
+        setTimeout( "$('.alert1').fadeOut()" , 1000)
+    });
+    function a1()
+    {
+        $(".openmo").slideToggle();
+    }
+    $(".ufmenu, .ufup").click(function(){
+        $(".ufix").animate({height:"0"});
+        $("header").show();
+    });
+
+    $(".menu").click(function(){
+        $(".ufix").animate({height:"100%"});
+        $("header").hide();
+
+    });
+
+    $(".qx0").click(function(){
+        $(".rmenu").show(300);
+        $(this).hide();
+        $(".qx45").show();
+    });
+    $(".qx45").click(function(){
+        $(".rmenu").hide(300);
+        $(this).hide();
+        $(".qx0").show();
+    });
+    $(".plsm").click(function(){
+        $(".peilv").show();
+        $(".main, .gmfix").hide();
+    });
+    $(".pltit span").click(function(){
+        $(".peilv").hide();
+        $(".main, .gmfix").show();
+    });
+    function showMask(){
+        $("#mask").css("height",$(document).height());
+        $("#mask").css("width",$(document).width());
+        $("#mask").show();
+    }
+    function hideMask(){
+        $("#mask").hide();
+    }
+</script>
+ </body>
+</html>
+
+
+
